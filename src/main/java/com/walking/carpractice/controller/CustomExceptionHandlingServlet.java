@@ -2,7 +2,6 @@ package com.walking.carpractice.controller;
 
 import com.walking.carpractice.exception.ApplicationException;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,14 +10,14 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-@WebServlet("/error")
-public class ExceptionHandlingServlet extends HttpServlet {
+//@WebServlet("/error")
+public class CustomExceptionHandlingServlet extends HttpServlet {
     public static final String ERROR_ATTRIBUTE_KEY = "jakarta.servlet.error.exception";
     public static final String ERROR_MESSAGE_ATTRIBUTE_KEY = "jakarta.servlet.error.message";
     public static final String STATUS_CODE_ATTRIBUTE_KEY = "jakarta.servlet.error.status_code";
     public static final String REQUEST_URI_ATTRIBUTE_KEY = "jakarta.servlet.error.request_uri";
 
-    private static final Logger log = LogManager.getLogger(ExceptionHandlingServlet.class);
+    private static final Logger log = LogManager.getLogger(CustomExceptionHandlingServlet.class);
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

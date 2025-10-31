@@ -1,5 +1,6 @@
 package com.walking.carpractice.service;
 
+import com.walking.carpractice.CarCountByOwner;
 import com.walking.carpractice.PasswordProvider;
 import com.walking.carpractice.dto.owner.OwnerCreateDto;
 import com.walking.carpractice.dto.owner.OwnerDto;
@@ -48,7 +49,7 @@ public class OwnerService {
 
     public OwnerDto read(String email){
         return helper.runTransactional(em->{
-           var owner=(OwnerEntity)em.createNativeQuery("select * from owner where email=?", OwnerEntity.class)
+           var owner=(OwnerEntity)em.createQuery("select o from OwnerEntity o where email=?1", OwnerEntity.class)
                    .setParameter(1,email)
                    .getSingleResult();
            if (owner!=null) {
@@ -94,5 +95,11 @@ public class OwnerService {
         } catch (Exception e) {
             throw new ApplicationException(ErrorCode.TRANSACTION_ERROR, e);
         }
+    }
+
+    public List<CarCountByOwner> carsByOwner(){
+        return helper.runTransactional(em->em
+                .createQuery("select new com.walking.carpractice.CarCountByOwner(o.email, count(c)) from OwnerEntity o join o.cars c group by o.email", CarCountByOwner.class)
+                .getResultList());
     }
 }

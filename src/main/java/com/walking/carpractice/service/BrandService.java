@@ -39,7 +39,7 @@ public class BrandService {
 
     public List<BrandEntity> read(){
         return entityManagerHelper.runTransactional(em->em
-                .createNativeQuery("select * from brand", BrandEntity.class).getResultList());
+                .createQuery("select b from BrandEntity b", BrandEntity.class).getResultList());
     }
 
     public BrandEntity update(BrandUpdateDto updateDto){

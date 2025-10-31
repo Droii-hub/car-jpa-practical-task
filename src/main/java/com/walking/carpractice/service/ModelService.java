@@ -36,7 +36,7 @@ public class ModelService {
 
     public List<ModelEntity> readByBrand(long brandId){
         return entityManagerHelper.runTransactional(em->em
-                .createNativeQuery("select * from model where brand_id=?", ModelEntity.class)
+                .createQuery("select m from ModelEntity m where brand.id=?1", ModelEntity.class)
                 .setParameter(1,brandId)
                 .getResultList());
     }

@@ -83,4 +83,11 @@ public class CarService {
         }
         //Нужно новое представление для владельцев, нужен мапинг в это представление
     }
+
+    public void disableTechnicalInspectionByYear(int year){
+        helper.runTransactionalNoResult(em->em
+                .createQuery("update CarEntity c set c.actualTechnicalInspection=false where c.creation_year<?1")
+                .setParameter(1,year)
+                .executeUpdate());
+    }
 }

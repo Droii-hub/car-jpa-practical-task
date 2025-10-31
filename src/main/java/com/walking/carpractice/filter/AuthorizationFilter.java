@@ -21,7 +21,7 @@ public class AuthorizationFilter extends HttpFilter {
         // Получаем объект сессии. Если сессии не существует - перенаправляем на страницу входа.
         HttpSession session = request.getSession(false);
         if (session == null) {
-            response.sendRedirect("./login");
+            response.sendRedirect("/carjpa/login");
             return;
         }
         chain.doFilter(request,response);
