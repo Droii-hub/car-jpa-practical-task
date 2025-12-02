@@ -5,12 +5,16 @@ import com.walking.carpractice.dto.car.CarUpdateDto;
 import com.walking.carpractice.exception.ApplicationException;
 import com.walking.carpractice.exception.ErrorCode;
 import com.walking.carpractice.model.*;
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.criteria.*;
+import org.hibernate.jpa.SpecHints;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class CarService {
     private static CarService instance;
@@ -71,17 +75,12 @@ public class CarService {
     }
 
     public List<String> getOwners(long id){
-        EntityManager em=emf.createEntityManager();
-        try{
-            em.getTransaction().begin();
-            var car=em.find(CarEntity.class, id);
-            var owners=car.getOwners();
-            em.getTransaction().commit();
-            return owners.stream().map(OwnerEntity::getEmail).toList();
-        } catch (Exception e){
-            throw new ApplicationException(ErrorCode.TRANSACTION_ERROR, e);
-        }
-        //Нужно новое представление для владельцев, нужен мапинг в это представление
+        return helper.runTransactional(em->{
+            EntityGraph entityGraph=em.getEntityGraph("car-with-owners");
+            Map<String, Object> properties=Map.of(SpecHints.HINT_SPEC_LOAD_GRAPH, entityGraph);
+            return em.find(CarEntity.class, id, properties).getOwners()
+                    .stream().map(OwnerEntity::getEmail).toList();
+        });
     }
 
     public void disableTechnicalInspectionByYear(int year){

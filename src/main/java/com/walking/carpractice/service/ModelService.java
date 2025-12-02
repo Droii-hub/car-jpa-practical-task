@@ -34,13 +34,6 @@ public class ModelService {
         return entityManagerHelper.runTransactional(em->em.find(ModelEntity.class, id));
     }
 
-    public List<ModelEntity> readByBrand(long brandId){
-        return entityManagerHelper.runTransactional(em->em
-                .createQuery("select m from ModelEntity m where brand.id=?1", ModelEntity.class)
-                .setParameter(1,brandId)
-                .getResultList());
-    }
-
     public ModelEntity update(ModelUpdateDto modelUpdateDto){
         return entityManagerHelper.runTransactional(em->{
             var model=em.find(ModelEntity.class, modelUpdateDto.getId());

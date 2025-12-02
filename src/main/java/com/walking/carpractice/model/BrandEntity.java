@@ -10,6 +10,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "brand")
+@NamedEntityGraph(
+        name="brand-with-models",
+        attributeNodes = @NamedAttributeNode(value = "models")
+)
 public class BrandEntity {
     public BrandEntity(){}
     public BrandEntity(BrandCreateDto newBrand){

@@ -9,6 +9,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "car")
+@NamedEntityGraph(
+        name="car-with-owners",
+        attributeNodes = @NamedAttributeNode(value = "owners")
+)
 public class CarEntity {
     public CarEntity(){}
 

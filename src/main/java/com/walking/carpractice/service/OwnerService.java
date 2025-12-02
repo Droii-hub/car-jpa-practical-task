@@ -8,10 +8,13 @@ import com.walking.carpractice.exception.ApplicationException;
 import com.walking.carpractice.exception.ErrorCode;
 import com.walking.carpractice.model.CarEntity;
 import com.walking.carpractice.model.OwnerEntity;
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import org.hibernate.jpa.SpecHints;
 
 import java.util.List;
+import java.util.Map;
 
 public class OwnerService {
     private static OwnerService instance;
@@ -85,16 +88,11 @@ public class OwnerService {
     }
 
     public List<CarEntity> getCars(long id){
-        EntityManager em=emf.createEntityManager();
-        try{
-            em.getTransaction().begin();
-            var owner=em.find(OwnerEntity.class, id);
-            var cars=owner.getCars();
-            em.getTransaction().commit();
-            return cars;
-        } catch (Exception e) {
-            throw new ApplicationException(ErrorCode.TRANSACTION_ERROR, e);
-        }
+        return helper.runTransactional(em->{
+            EntityGraph entityGraph=em.getEntityGraph("owner-with-cars");
+            Map<String, Object> properties=Map.of(SpecHints.HINT_SPEC_LOAD_GRAPH, entityGraph);
+            return em.find(OwnerEntity.class, id, properties).getCars();
+        });
     }
 
     public List<CarCountByOwner> carsByOwner(){

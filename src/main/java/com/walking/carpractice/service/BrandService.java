@@ -6,10 +6,13 @@ import com.walking.carpractice.exception.ApplicationException;
 import com.walking.carpractice.exception.ErrorCode;
 import com.walking.carpractice.model.BrandEntity;
 import com.walking.carpractice.model.ModelEntity;
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import org.hibernate.jpa.SpecHints;
 
 import java.util.List;
+import java.util.Map;
 
 public class BrandService {
     private static BrandService instance;
@@ -58,22 +61,11 @@ public class BrandService {
     }
 
     public List<ModelEntity> getModels(long id){
-        //при использовании помощника сессия гибернейта закрывается до обращения к моделям и получается
-        //failed to lazily initialize a collection of role: com.walking.carpractice.model.BrandEntity.models:
-        // could not initialize proxy - no Session
-//        return entityManagerHelper.runTransactional(em->{
-//            var brand=em.find(BrandEntity.class, id);
-//            return brand.getModels();
-//        });
-        EntityManager entityManager= emf.createEntityManager();
-        try {
-            entityManager.getTransaction().begin();
-            var brand = entityManager.find(BrandEntity.class, id);
-            var models = brand.getModels();
-            entityManager.getTransaction().commit();
-            return models;
-        } catch (Exception e) {
-            throw new ApplicationException(ErrorCode.TRANSACTION_ERROR,e);
-        }
+        return entityManagerHelper.runTransactional(em->{
+            EntityGraph entityGraph=em.getEntityGraph("brand-with-models");
+            Map<String, Object> properties=Map.of(SpecHints.HINT_SPEC_LOAD_GRAPH, entityGraph);
+            var brand=em.find(BrandEntity.class, id, properties);
+            return brand.getModels();
+        });
     }
 }

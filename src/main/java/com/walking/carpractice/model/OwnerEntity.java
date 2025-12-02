@@ -8,6 +8,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "owner")
+@NamedEntityGraph(
+        name="owner-with-cars",
+        attributeNodes = @NamedAttributeNode(value = "cars")
+)
 public class OwnerEntity {
     public OwnerEntity(){}
 
