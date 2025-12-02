@@ -4,12 +4,12 @@ import com.walking.carpractice.dto.car.CarCreateDto;
 import com.walking.carpractice.dto.car.CarUpdateDto;
 import com.walking.carpractice.exception.ApplicationException;
 import com.walking.carpractice.exception.ErrorCode;
-import com.walking.carpractice.model.CarEntity;
-import com.walking.carpractice.model.ModelEntity;
-import com.walking.carpractice.model.OwnerEntity;
+import com.walking.carpractice.model.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.criteria.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CarService {
@@ -89,5 +89,28 @@ public class CarService {
                 .createQuery("update CarEntity c set c.actualTechnicalInspection=false where c.creation_year<?1")
                 .setParameter(1,year)
                 .executeUpdate());
+    }
+
+    public List<CarEntity> find(String color, String brand, String model){
+        return helper.runTransactional(em-> {
+            CriteriaBuilder builder=em.getCriteriaBuilder();
+            CriteriaQuery<CarEntity> query=builder.createQuery(CarEntity.class);
+
+            Root<CarEntity> carRoot=query.from(CarEntity.class);
+
+            //carRoot.join(CarEntity_.model);
+            Join<CarEntity, ModelEntity> modelJoin=carRoot.join(CarEntity_.model, JoinType.INNER);
+
+
+            List<Predicate> predicates=new ArrayList<>();
+
+            if (color!=null)
+                query.where(builder.equal(carRoot.get(CarEntity_.color),color));
+            if (model!=null){
+                modelJoin.on(builder.equal(modelJoin.get(ModelEntity_.name), model));
+            }
+
+            return em.createQuery(query).getResultList();
+        });
     }
 }

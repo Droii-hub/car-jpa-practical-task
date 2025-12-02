@@ -1,4 +1,4 @@
-<%@ page import="static com.walking.carpractice.servlet.ExceptionHandlingServlet.ERROR_MESSAGE_ATTRIBUTE_KEY" %>
+<%@ page import="static com.walking.carpractice.controller.CustomExceptionHandlingServlet.ERROR_MESSAGE_ATTRIBUTE_KEY" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
     <head>
